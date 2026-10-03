@@ -5,6 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Карта устойчивости</title>
 <meta name="description" content="Тест по шести опорам метода «Устойчивость»: увидеть, где опора держит, а где проседает. Галина Васильева, клинический психолог.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://karta.vasilevagalina.ru/">
+<meta property="og:title" content="Карта устойчивости">
+<meta property="og:description" content="Тест на 3 минуты: на что ты опираешься, когда трудно, — и где опоры не хватает.">
+<meta property="og:image" content="https://karta.vasilevagalina.ru/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="ru_RU">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23241A12'/%3E%3Cpolygon points='32,9 52,20.5 52,43.5 32,55 12,43.5 12,20.5' fill='none' stroke='%23E8C875' stroke-width='3'/%3E%3Cpolygon points='32,17 45,25 40,40 32,47 21,40 19,24' fill='%239F4D36'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -120,6 +130,10 @@
   /* result */
   .radar-wrap{position:relative}
   .radar{display:block;width:100%;height:auto;overflow:visible}
+  /* паутинка результата вырастает из центра */
+  .radar .grow{transform-box:view-box;transform-origin:210px 150px;animation:grow .9s cubic-bezier(.2,.8,.2,1) .2s both}
+  @keyframes grow{from{transform:scale(.05);opacity:0}to{transform:none;opacity:1}}
+  @media (prefers-reduced-motion:reduce){.radar .grow{animation:none}}
   .tip{position:absolute;pointer-events:none;background:var(--dark);color:var(--ink-on-dark);font-size:13px;line-height:1.35;padding:8px 10px;border-radius:8px;max-width:210px;z-index:3}
   .tip b{display:block;font-size:14px}
   .levels{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12.5px;color:var(--ink-soft);margin-top:6px}
@@ -150,7 +164,8 @@
   .offer .facts{font-weight:600;color:var(--gold)}
   .offer ul.calm{list-style:none;margin:0 0 14px;padding:0;display:grid;gap:2px}
   .offer .fine{font-size:13px;color:#CBB691;margin:10px 0 0;text-align:center}
-  .offer .lead{text-align:center;margin-top:18px}
+  .offer .avatar{display:block;width:88px;height:88px;border-radius:50%;object-fit:cover;margin:22px auto 0;border:2px solid var(--gold)}
+  .offer .lead{text-align:center;margin-top:12px}
   .note-hard{border-left:2px solid var(--terracotta);padding:2px 0 2px 12px}
   /* заявка */
   .apply{display:grid;gap:18px;border-color:var(--terracotta)}
@@ -254,6 +269,7 @@
           <li>Можно молчать.</li>
           <li>Глубину выбираешь сама.</li>
         </ul>
+        <img class="avatar" src="galina.jpg" alt="Галина Васильева" width="88" height="88">
         <p class="lead">Веду я, Галина Васильева. Клинический психолог, 11 лет практики, больше 5&nbsp;000 консультаций. Самокритику знаю не только по работе.</p>
         <button class="btn" id="apply-open" type="button">Хочу в группу</button>
         <p class="fine">Заявка — две минуты, отвечу за два дня. Набор до 25&nbsp;октября.</p>
@@ -542,7 +558,8 @@ function drawRadar(svg, vals, opts){
   });
   // многоугольник значений
   const vp = PILLARS.map((p, i) => pt(i, Math.max(6, vals[p.id] / 12 * R)));
-  el("polygon", {points:vp.map(q => q.join(",")).join(" "), fill:"rgba(159,77,54,.14)", stroke:"#9F4D36", "stroke-width":2, "stroke-linejoin":"round"}, svg);
+  const grow = opts.interactive ? {"class":"grow"} : {};
+  el("polygon", Object.assign({points:vp.map(q => q.join(",")).join(" "), fill:"rgba(159,77,54,.14)", stroke:"#9F4D36", "stroke-width":2, "stroke-linejoin":"round"}, grow), svg);
   // подписи и точки
   PILLARS.forEach((p, i) => {
     const [lx, ly] = pt(i, R + 18);
@@ -551,7 +568,7 @@ function drawRadar(svg, vals, opts){
     lbl.textContent = p.short;
     const [x, y] = vp[i];
     const isWeak = opts.weak === p.id;
-    el("circle", {cx:x, cy:y, r:isWeak ? 7 : 5, fill:isWeak ? "#E8C875" : "#9F4D36", stroke:"#FBF8F1", "stroke-width":2}, svg);
+    el("circle", Object.assign({cx:x, cy:y, r:isWeak ? 7 : 5, fill:isWeak ? "#E8C875" : "#9F4D36", stroke:"#FBF8F1", "stroke-width":2}, grow), svg);
     if(opts.interactive){
       const hit = el("circle", {cx:x, cy:y, r:16, fill:"transparent", tabindex:0, role:"img", "aria-label": p.name + ": " + five(vals[p.id]) + " из 5, " + level(vals[p.id])}, svg);
       hit.style.cursor = "pointer";
