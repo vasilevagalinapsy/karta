@@ -86,6 +86,10 @@
   .screen.active{display:block;animation:inup .4s ease both}
   @keyframes inup{from{opacity:.001;transform:translateY(8px)}to{opacity:1;transform:none}}
   @media (prefers-reduced-motion:reduce){.screen.active{animation:none}}
+  .q-in{animation:qin .38s ease both}
+  #q-opts.q-in{animation-delay:.06s}
+  @keyframes qin{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion:reduce){.q-in{animation:none}}
 
   .eyebrow{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft);margin:0 0 10px}
   h1{font-family:var(--serif);font-weight:600;font-size:clamp(2.4rem,11vw,3.1rem);line-height:1.02;margin:0 0 14px;text-wrap:balance}
@@ -112,6 +116,7 @@
   .example .tag{position:absolute;top:10px;left:12px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);background:var(--light);padding:2px 7px;border-radius:5px}
   .author{text-align:center;font-size:13.5px;color:var(--ink-soft)}
   .author span{white-space:nowrap}
+  .author-photo{display:block;width:52px;height:52px;border-radius:50%;object-fit:cover;margin:0 auto 8px;border:1.5px solid var(--gold)}
 
   /* question */
   .progress{display:flex;align-items:center;gap:12px;margin-bottom:26px}
@@ -214,6 +219,7 @@
     <div style="margin:22px 0 14px">
       <button class="btn" id="start-btn" type="button">Начать</button>
     </div>
+    <img class="author-photo" src="galina-krug.jpg" alt="Галина Васильева" width="52" height="52">
     <p class="author"><span>Галина Васильева ·</span> <span>клинический психолог ·</span> <span>метод «Устойчивость»</span></p>
     <p class="small">Это не диагноз и не клинический тест. Ответы никуда не отправляются: всё считается прямо в твоём браузере.</p>
   </section>
@@ -481,8 +487,14 @@ function show(id){
 /* =====================================================================
    Вопросы
    ===================================================================== */
+let shownQ = -1;
 function renderQ(){
   const i = state.i, n = ITEMS.length;
+  // проявляем только новый вопрос, а не повторную отрисовку выбранного ответа
+  if(i !== shownQ){
+    ["q-text", "q-opts"].forEach(id => { const e = $(id); e.classList.remove("q-in"); void e.offsetWidth; e.classList.add("q-in"); });
+    shownQ = i;
+  }
   $("q-count").textContent = (i+1) + " из " + n;
   $("q-bar").style.width = (i / n * 100) + "%";
   $("q-text").textContent = ITEMS[i].t;
