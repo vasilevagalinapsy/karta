@@ -485,10 +485,30 @@ const ITEMS = [
 const SCALE = ["Совсем не про меня","Скорее нет","Иногда","Скорее да","Точно про меня"];
 
 /* =====================================================================
-   Состояние
+   Состояние. Копия — в sessionStorage этой вкладки: обновление страницы
+   возвращает к тому же вопросу или к результату. Закрыла вкладку или нажала
+   «Пройти ещё раз» — копия стирается. Ответы из заявки не сохраняются.
    ===================================================================== */
 const state = { i:0, answers:new Array(ITEMS.length).fill(null) };
 const $ = id => document.getElementById(id);
+const STORE = "karta-ustoychivosti-v1";
+function save(screen){
+  try { sessionStorage.setItem(STORE, JSON.stringify({screen, i:state.i, answers:state.answers})); } catch(e){}
+}
+function forget(){
+  try { sessionStorage.removeItem(STORE); } catch(e){}
+}
+function restore(){
+  try {
+    const s = JSON.parse(sessionStorage.getItem(STORE)), n = ITEMS.length;
+    if(!s || (s.screen !== "q" && s.screen !== "result")) return null;
+    if(!Number.isInteger(s.i) || s.i < 0 || s.i >= n) return null;
+    if(!Array.isArray(s.answers) || s.answers.length !== n) return null;
+    if(!s.answers.every(a => a === null || (Number.isInteger(a) && a >= 0 && a < SCALE.length))) return null;
+    if(s.screen === "result" && s.answers.includes(null)) return null;
+    return s;
+  } catch(e){ return null; }
+}
 function show(id){
   document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
   $(id).classList.add("active");
@@ -499,43 +519,59 @@ function show(id){
    Вопросы
    ===================================================================== */
 let shownQ = -1;
+// Переход к следующему вопросу один на всех: выбор ответа ставит его,
+// «Назад» и «Пройти ещё раз» отменяют. Нажатие, которое началось, пока ответы
+// нового вопроса проявляются (до readyAt), не считается — так двойной тап
+// не отвечает сразу на два вопроса. downAt — когда опустились палец или мышь.
+let pending = null, readyAt = 0, downAt = -1;
+function cancelPending(){ clearTimeout(pending); pending = null; }
+$("q-opts").addEventListener("pointerdown", () => { downAt = performance.now(); });
+$("q-opts").addEventListener("pointercancel", () => { downAt = -1; });
 function renderQ(){
   const i = state.i, n = ITEMS.length;
   // проявляем только новый вопрос, а не повторную отрисовку выбранного ответа
   if(i !== shownQ){
     ["q-text", "q-opts"].forEach(id => { const e = $(id); e.classList.remove("q-in"); void e.offsetWidth; e.classList.add("q-in"); });
     shownQ = i;
+    readyAt = performance.now() + 400; downAt = -1;
+    // если страница прокручена к нижним ответам, возвращаем начало вопроса на экран
+    if($("q-count").getBoundingClientRect().top < 0) window.scrollTo({top:0});
   }
   $("q-count").textContent = (i+1) + " из " + n;
   $("q-bar").style.width = (i / n * 100) + "%";
   $("q-text").textContent = ITEMS[i].t;
-  const box = $("q-opts"); box.textContent = "";
+  const box = $("q-opts");
+  // кнопки пересоздаются; фокус с клавиатуры остаётся на той же позиции
+  const focusAt = Array.prototype.indexOf.call(box.children, document.activeElement);
+  box.textContent = "";
   SCALE.forEach((label, v) => {
     const b = document.createElement("button");
     b.type = "button"; b.className = "opt" + (state.answers[i] === v ? " chosen" : "");
     const k = document.createElement("span"); k.className = "key"; k.textContent = String(v+1);
     const t = document.createElement("span"); t.textContent = label;
     b.appendChild(k); b.appendChild(t);
-    b.addEventListener("click", () => choose(v));
+    b.addEventListener("click", () => { const at = downAt; downAt = -1; choose(v, at); });
     box.appendChild(b);
   });
+  if(focusAt >= 0) box.children[focusAt].focus({preventScroll:true});
   $("back-btn").style.visibility = i === 0 ? "hidden" : "visible";
+  save("q");
 }
-let busy = false;
-function choose(v){
-  if(busy) return; busy = true;
+function choose(v, at){
+  if(pending || (at >= 0 ? at : performance.now()) < readyAt) return;
   state.answers[state.i] = v;
   renderQ();
-  setTimeout(() => {
-    busy = false;
+  pending = setTimeout(() => {
+    pending = null;
     if(state.i < ITEMS.length - 1){ state.i++; renderQ(); }
     else { showResult(); }
   }, 220);
 }
 $("start-btn").addEventListener("click", () => { state.i = 0; show("screen-q"); renderQ(); });
-$("back-btn").addEventListener("click", () => { if(state.i > 0){ state.i--; renderQ(); } });
+$("back-btn").addEventListener("click", () => { cancelPending(); if(state.i > 0){ state.i--; renderQ(); } });
 document.addEventListener("keydown", e => {
   if(!$("screen-q").classList.contains("active")) return;
+  if(e.repeat || e.ctrlKey || e.metaKey || e.altKey) return;
   const k = parseInt(e.key, 10);
   if(k >= 1 && k <= 5) choose(k-1);
 });
@@ -697,6 +733,7 @@ function showResult(){
   price.textContent = CONFIG.groupPrice || ""; price.hidden = !CONFIG.groupPrice;
   $("offer-name").textContent = CONFIG.groupName;
   state.weak = weak;
+  save("result");
 }
 
 function summaryText(s){
@@ -732,6 +769,14 @@ function updateStop(){
   $("f-err").textContent = "";
 }
 ["f-s1","f-s2"].forEach(id => $(id).addEventListener("change", updateStop));
+// «Заявка скопирована» верно только для текста, который правда скопирован:
+// после правки заявки или нового прохождения кнопка возвращается к началу
+const F_COPY_LABEL = $("f-copy").textContent;
+function resetCopy(){
+  $("f-copy").textContent = F_COPY_LABEL;
+  const ta = $("f-copy-fallback"); ta.hidden = true; ta.value = "";
+}
+$("apply").addEventListener("input", resetCopy);
 $("apply").addEventListener("submit", e => e.preventDefault());
 $("f-send").addEventListener("click", e => {
   const miss = [];
@@ -774,11 +819,24 @@ $("copy-btn").addEventListener("click", () => {
   } catch(e){ fallback(); }
 });
 $("restart-btn").addEventListener("click", () => {
+  cancelPending(); forget();
   state.i = 0; state.answers = new Array(ITEMS.length).fill(null);
-  $("copied").textContent = ""; $("copy-fallback").hidden = true;
+  $("copied").textContent = ""; $("copy-fallback").hidden = true; $("copy-fallback").value = "";
   $("apply").reset(); $("apply").hidden = true; $("f-after").hidden = true; updateStop();
+  resetCopy(); $("f-send").href = "#";
   show("screen-intro");
 });
+
+/* =====================================================================
+   После обновления страницы — продолжаем с того же места
+   ===================================================================== */
+if("scrollRestoration" in history) history.scrollRestoration = "manual";
+const saved = restore();
+if(saved){
+  state.i = saved.i; state.answers = saved.answers;
+  if(saved.screen === "result"){ showResult(); }
+  else { show("screen-q"); renderQ(); }
+}
 </script>
 </body>
 </html>
