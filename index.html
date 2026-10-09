@@ -179,8 +179,6 @@
   .offer .lead{text-align:center;margin-top:12px}
   .note-hard{border-left:2px solid var(--terracotta);padding:2px 0 2px 12px}
   /* заявка */
-  .apply{display:grid;gap:18px;border-color:var(--terracotta)}
-  .apply h2{margin:0}
   .field{display:grid;gap:8px;border:0;margin:0;padding:0;min-width:0}
   /* вопросы — обычный текст, не legend: legend в сетке в части браузеров сжимается до ширины слова */
   .field > .q{font-weight:700;font-size:15px;padding:0;margin:0 0 2px}
@@ -288,102 +286,12 @@
         </ul>
         <img class="avatar" src="galina-krug.jpg" alt="Галина Васильева" width="88" height="88">
         <p class="lead">Веду я, Галина Васильева. Клинический психолог, 11 лет практики, больше 5&nbsp;000 консультаций. Самокритику знаю не только по работе.</p>
-        <button class="btn" id="apply-open" type="button">Хочу в группу</button>
-        <p class="fine">Заявка — две минуты, отвечу за два дня. Набор до 1&nbsp;ноября.</p>
+        <a class="btn" id="apply-open" href="https://gruppa.vasilevagalina.ru/#join" target="_blank" rel="noopener">Хочу в группу</a>
+        <p class="fine">Заявка — минута, на странице группы. Набор до 1&nbsp;ноября.</p>
+        <p class="fine"><a href="https://gruppa.vasilevagalina.ru" target="_blank" rel="noopener" style="color:inherit">Всё о группе — программа, отзывы, вопросы</a></p>
         <p class="fine" id="offer-price"></p>
       </div>
 
-      <form class="card apply" id="apply" hidden novalidate>
-        <div>
-          <p class="eyebrow">Заявка в группу</p>
-          <h2>Пара вопросов — и всё</h2>
-          <p class="small" style="margin:6px 0 0">Твоя карта уже в заявке. Эти ответы увижу только я.</p>
-        </div>
-
-        <div class="field">
-          <label class="q" for="f-phrase">Какой фразой ты чаще всего себя критикуешь?</label>
-          <textarea id="f-phrase" rows="2" placeholder="Например: «опять ты всё испортила»"></textarea>
-        </div>
-
-        <div class="field">
-          <label class="q" for="f-expect">Чего ты ждёшь от восьми встреч?</label>
-          <textarea id="f-expect" rows="2"></textarea>
-        </div>
-
-        <div class="field" role="group" aria-labelledby="g-exp">
-          <p class="q" id="g-exp">Была ли ты в терапии или в группах?</p>
-          <div class="chips">
-            <label><input type="radio" name="f-exp" id="f-exp-1" value="Нет, это впервые"><span>Нет, впервые</span></label>
-            <label><input type="radio" name="f-exp" id="f-exp-2" value="Была в терапии"><span>Была в терапии</span></label>
-            <label><input type="radio" name="f-exp" id="f-exp-3" value="Сейчас в терапии"><span>Сейчас в терапии</span></label>
-            <label><input type="radio" name="f-exp" id="f-exp-4" value="Была в группах"><span>Была в группах</span></label>
-          </div>
-        </div>
-
-        <div class="field" role="group" aria-labelledby="g-att">
-          <p class="q" id="g-att">Сможешь быть на всех восьми встречах, по средам вечером?</p>
-          <div class="chips">
-            <label><input type="radio" name="f-att" id="f-att-1" value="Да"><span>Да</span></label>
-            <label><input type="radio" name="f-att" id="f-att-2" value="Скорее да"><span>Скорее да</span></label>
-            <label><input type="radio" name="f-att" id="f-att-3" value="Пока не уверена"><span>Пока не уверена</span></label>
-          </div>
-        </div>
-
-        <div class="field" role="group" aria-labelledby="g-place">
-          <p class="q" id="g-place">Есть место, где можно говорить одной, с включённой камерой?</p>
-          <div class="chips">
-            <label><input type="radio" name="f-place" id="f-place-1" value="Да"><span>Да</span></label>
-            <label><input type="radio" name="f-place" id="f-place-2" value="Найду"><span>Найду</span></label>
-            <label><input type="radio" name="f-place" id="f-place-3" value="Нет"><span>Нет</span></label>
-          </div>
-        </div>
-
-        <div class="field" role="group" aria-labelledby="g-safety">
-          <p class="q" id="g-safety">Отметь, если это про тебя сейчас</p>
-          <p class="hint">Это нужно, чтобы группа была безопасной для всех. Можно ничего не отмечать.</p>
-          <div class="checks">
-            <label for="f-s1"><input type="checkbox" id="f-s1"><span>Сейчас очень тяжело, и бывают мысли, что не хочется жить</span></label>
-            <label for="f-s2"><input type="checkbox" id="f-s2"><span>Есть зависимость, которая сейчас сильно мешает жить</span></label>
-            <label for="f-s3"><input type="checkbox" id="f-s3"><span>Я наблюдаюсь у психиатра</span></label>
-          </div>
-        </div>
-
-        <div class="field" role="group" aria-labelledby="g-rules">
-          <p class="q" id="g-rules">Правила группы</p>
-          <ul class="rules-list">
-            <li>Своё можно рассказывать кому угодно, чужое — нет.</li>
-            <li>Встречи не записываются.</li>
-            <li>Камера включена, место отдельное.</li>
-            <li>Группа работает, только когда мы вместе. Поэтому важно приходить на все встречи.</li>
-            <li>Оплата — за четыре встречи вперёд.</li>
-            <li>Если решишь уйти — приди попрощаться.</li>
-          </ul>
-          <div class="checks">
-            <label for="f-rules"><input type="checkbox" id="f-rules"><span>Я прочитала правила и согласна</span></label>
-          </div>
-        </div>
-
-        <p class="err" id="f-err" aria-live="polite"></p>
-
-        <div class="stop" id="f-stop" hidden>
-          <p><strong>Спасибо, что ответила честно.</strong> Сейчас группа — не лучший первый шаг: в ней много людей и мало времени на каждую. Напиши мне лично — подберём другой формат.</p>
-          <p class="small">Если совсем тяжело и появляются мысли, что не хочется жить, — не жди: позвони в экстренные службы по номеру 112.</p>
-          <a class="btn btn-ghost" id="f-personal" href="#" target="_blank" rel="noopener">Написать Галине лично</a>
-        </div>
-
-        <div id="f-send-wrap">
-          <a class="btn" id="f-send" href="#" target="_blank" rel="noopener">Отправить заявку в Telegram</a>
-          <p class="small" style="margin:8px 0 0">Откроется чат со мной, заявка уже будет в сообщении — останется нажать «Отправить».</p>
-        </div>
-
-        <div class="after" id="f-after" hidden>
-          <p style="margin:0 0 6px"><strong>Что дальше.</strong> Я прочитаю заявку и отвечу в течение двух дней: пришлю ссылку на оплату и опрос про удобное время.</p>
-          <p style="margin:0" id="f-after-call">Если захочется что-то уточнить, созвонимся на 15 минут.</p>
-        </div>
-
-        <button class="linkbtn" id="f-copy" type="button">Telegram не открылся? Скопировать заявку</button>
-        <textarea id="f-copy-fallback" readonly rows="10" style="width:100%;font:inherit;font-size:13px;border:1px solid var(--line);border-radius:10px;padding:10px;background:#fff" hidden></textarea>
-      </form>
 
       <button class="btn btn-ghost" id="copy-btn" type="button">Скопировать мою карту</button>
       <p class="copied" id="copied" aria-live="polite"></p>
@@ -396,7 +304,7 @@
       <div class="sign">
         <p class="sign-name">Галина Васильева</p>
         <p>Клинический психолог, автор метода «Устойчивость»</p>
-        <p><a href="https://t.me/vasileva_galina_psy" target="_blank" rel="noopener">Мой канал в Telegram</a></p>
+        <p><a href="https://gruppa.vasilevagalina.ru" target="_blank" rel="noopener">Группа «Что со мной не так?»</a> · <a href="https://t.me/vasileva_galina_psy" target="_blank" rel="noopener">Мой канал в Telegram</a></p>
       </div>
     </footer>
   </section>
@@ -413,7 +321,7 @@ const CONFIG = {
   // Название группы — одна строка, меняется здесь.
   groupName: "Что со мной не так?",
   // Строки про группу. Пустая строка — не показывать.
-  groupStart: "старт 4\u00a0ноября, по средам",
+  groupStart: "старт 4\u00a0ноября, по средам в\u00a019:00",
   groupPrice: "3\u00a0000\u00a0₽ за встречу (2\u00a0часа)"
 };
 
@@ -739,72 +647,6 @@ function showResult(){
 function summaryText(s){
   return PILLARS.map(p => p.name + " — " + five(s[p.id]) + " из 5 (" + level(s[p.id]) + ")").join("\n");
 }
-function tgLink(text){ return CONFIG.contactBase + "?text=" + encodeURIComponent(text); }
-function checked(name){ const el = document.querySelector('input[name="' + name + '"]:checked'); return el ? el.value : ""; }
-function application(){
-  const s = scores(), w = PILLARS.find(p => p.id === state.weak);
-  const lines = ["Здравствуйте! Хочу в группу «" + CONFIG.groupName + "».", "", "Моя карта устойчивости:", summaryText(s), "Тонкое место — «" + w.name + "».", ""];
-  const phrase = $("f-phrase").value.trim(), expect = $("f-expect").value.trim();
-  if(phrase) lines.push("Как я себя критикую: «" + phrase + "»");
-  if(expect) lines.push("Чего жду: " + expect);
-  lines.push("Терапия и группы: " + (checked("f-exp") || "не ответила"));
-  lines.push("Смогу быть на всех встречах: " + checked("f-att"));
-  lines.push("Место для встреч: " + checked("f-place"));
-  if($("f-s3").checked) lines.push("Наблюдаюсь у психиатра — давайте созвонимся на 15 минут.");
-  lines.push("Правила прочитала, согласна.");
-  return lines.join("\n");
-}
-
-$("apply-open").addEventListener("click", () => {
-  const f = $("apply"); f.hidden = false;
-  $("f-personal").href = tgLink("Здравствуйте! Прошла «Карту устойчивости» и хочу написать лично.");
-  f.scrollIntoView({behavior:"smooth", block:"start"});
-  setTimeout(() => $("f-phrase").focus({preventScroll:true}), 400);
-});
-function updateStop(){
-  const stop = $("f-s1").checked || $("f-s2").checked;
-  $("f-stop").hidden = !stop;
-  $("f-send-wrap").hidden = stop;
-  $("f-copy").hidden = stop;
-  $("f-err").textContent = "";
-}
-["f-s1","f-s2"].forEach(id => $(id).addEventListener("change", updateStop));
-// «Заявка скопирована» верно только для текста, который правда скопирован:
-// после правки заявки или нового прохождения кнопка возвращается к началу
-const F_COPY_LABEL = $("f-copy").textContent;
-function resetCopy(){
-  $("f-copy").textContent = F_COPY_LABEL;
-  const ta = $("f-copy-fallback"); ta.hidden = true; ta.value = "";
-}
-$("apply").addEventListener("input", resetCopy);
-$("apply").addEventListener("submit", e => e.preventDefault());
-$("f-send").addEventListener("click", e => {
-  const miss = [];
-  if(!checked("f-att")) miss.push("сможешь ли быть на встречах");
-  if(!checked("f-place")) miss.push("есть ли место для встреч");
-  if(!$("f-rules").checked) miss.push("согласие с правилами");
-  if(miss.length){
-    e.preventDefault();
-    $("f-err").textContent = "Осталось ответить: " + miss.join(", ") + ".";
-    return;
-  }
-  $("f-err").textContent = "";
-  $("f-send").href = tgLink(application());
-  $("f-after").hidden = false;
-  $("f-after-call").textContent = $("f-s3").checked
-    ? "Ты отметила, что наблюдаешься у психиатра, — я предложу созвониться на 15 минут перед стартом."
-    : "Если захочется что-то уточнить, созвонимся на 15 минут.";
-});
-$("f-copy").addEventListener("click", () => {
-  const ta = $("f-copy-fallback"), text = application();
-  const done = () => { $("f-err").textContent = ""; $("f-copy").textContent = "Заявка скопирована — пришли её мне в любом мессенджере"; };
-  const fallback = () => { ta.hidden = false; ta.value = text; ta.focus(); ta.select(); $("f-copy").textContent = "Выдели текст ниже и скопируй его"; };
-  try {
-    if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(text).then(done, fallback); }
-    else { fallback(); }
-  } catch(err){ fallback(); }
-});
-
 $("copy-btn").addEventListener("click", () => {
   const s = scores();
   const text = "Моя карта устойчивости\n\n" + summaryText(s);
@@ -822,8 +664,6 @@ $("restart-btn").addEventListener("click", () => {
   cancelPending(); forget();
   state.i = 0; state.answers = new Array(ITEMS.length).fill(null);
   $("copied").textContent = ""; $("copy-fallback").hidden = true; $("copy-fallback").value = "";
-  $("apply").reset(); $("apply").hidden = true; $("f-after").hidden = true; updateStop();
-  resetCopy(); $("f-send").href = "#";
   show("screen-intro");
 });
 
